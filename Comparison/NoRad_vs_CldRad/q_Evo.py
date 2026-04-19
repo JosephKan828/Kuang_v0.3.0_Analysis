@@ -92,7 +92,7 @@ ax.set_xlim(0, 30)
 # ax.set_ylim(0, 10)
 ax.set_xlabel("Time [day]")
 ax.set_title("Moisture anomaly [K]")
-# ax.legend(frameon=False, loc="best")
+ax.legend(frameon=False, loc="best")
 
 plt.savefig("/home/b11209013/Kuang2008_v0.3.0_Analysis/Figure/NoRad_vs_CldRad/q_evo.png", dpi=600, bbox_inches="tight")
 plt.close(fig)
