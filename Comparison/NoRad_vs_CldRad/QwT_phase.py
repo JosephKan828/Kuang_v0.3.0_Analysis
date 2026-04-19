@@ -164,11 +164,11 @@ z = np.linspace(0, 14000, nz)[1:]
 fig, ax = plt.subplots(1, 1, figsize=(5, 9), sharey=True)
 
 # Plot w-T phase lag
-ax.plot(No_wT_mean[1:], z, label="NoRad", color="C0", lw=2)
+ax.plot(No_wT_mean[1:], z, label="NoRad", color="C0", lw=4)
 ax.fill_betweenx(z, No_wT_mean[1:] - No_wT_std[1:], No_wT_mean[1:] + No_wT_std[1:], color="C0", alpha=0.2)
 
-ax.plot(Cld_wT_mean[1:], z, label="CldRad", color="C1", lw=2)
-ax.fill_betweenx(z, Cld_wT_mean[1:] - Cld_wT_std[1:], Cld_wT_mean[1:] + Cld_wT_std[1:], color="C1", alpha=0.2)
+ax.plot(Cld_wT_mean[1:], z, label="CldRad", color="deeppink", lw=4)
+ax.fill_betweenx(z, Cld_wT_mean[1:] - Cld_wT_std[1:], Cld_wT_mean[1:] + Cld_wT_std[1:], color="deeppink", alpha=0.2)
 
 ax.axvline(0, color="k", linestyle="--", alpha=0.5)
 ax.set_xticks(np.linspace(-np.pi, np.pi, 5), [r"-$\pi$", r"-$\pi$/2", "0", r"$\pi$/2", r"$\pi$"])
@@ -184,11 +184,11 @@ plt.close(fig)
 # Plot J-T (QT) phase lag
 fig, ax = plt.subplots(1, 1, figsize=(5, 9), sharey=True)
 
-ax.plot(No_QT_mean[1:], z, label="NoRad", color="C0", lw=2)
+ax.plot(No_QT_mean[1:], z, label="NoRad", color="C0", lw=4)
 ax.fill_betweenx(z, No_QT_mean[1:] - No_QT_std[1:], No_QT_mean[1:] + No_QT_std[1:], color="C0", alpha=0.2)
 
-ax.plot(Cld_QT_mean[1:], z, label="CldRad", color="C1", lw=2)
-ax.fill_betweenx(z, Cld_QT_mean[1:] - Cld_QT_std[1:], Cld_QT_mean[1:] + Cld_QT_std[1:], color="C1", alpha=0.2)
+ax.plot(Cld_QT_mean[1:], z, label="CldRad", color="deeppink", lw=4)
+ax.fill_betweenx(z, Cld_QT_mean[1:] - Cld_QT_std[1:], Cld_QT_mean[1:] + Cld_QT_std[1:], color="deeppink", alpha=0.2)
 
 ax.axvline(0, color="k", linestyle="--", alpha=0.5)
 ax.set_xticks(np.linspace(-np.pi, np.pi, 5), [r"-$\pi$", r"-$\pi$/2", "0", r"$\pi$/2", r"$\pi$"])

@@ -51,7 +51,7 @@ with h5py.File(NoPath / "GalerkinState.h5", "r") as file:
     NoState: dict[str, np.ndarray] = {
         key: np.real(cast(h5py.Dataset, file[key])[Noidx, ...])
         for key in file.keys()
-        if key.startswith(("T", "J"))
+        if key.startswith(("T", "J", "w"))
     } # shape: (nz, nx, nt, nens)
 
     x: np.ndarray = cast(h5py.Dataset, file["x"])[...]
@@ -61,7 +61,7 @@ with h5py.File(CldPath / "GalerkinState.h5", "r") as file:
     CldState: dict[str, np.ndarray] = {
         key: np.real(cast(h5py.Dataset, file[key])[Cldidx, ...])
         for key in file.keys()
-        if key.startswith(("T", "J"))
+        if key.startswith(("T", "J", "w"))
     } # shape: (nz, nx, nt, nens)
 
 # ====================================================
@@ -71,16 +71,20 @@ with h5py.File(CldPath / "GalerkinState.h5", "r") as file:
 # Combining data
 NoT: np.ndarray = NoState["T1"] + NoState["T2"]
 NoJ: np.ndarray = NoState["J1"] + NoState["J2"]
+Now: np.ndarray = (NoState["w1"] + NoState["w2"]) / 86400.0
 
 CldT: np.ndarray = CldState["T1"] + CldState["T2"]
 CldJ: np.ndarray = CldState["J1"] + CldState["J2"]
+Cldw: np.ndarray = (CldState["w1"] + CldState["w2"]) / 86400.0
 
 # Maximum at different time stamp
 NoT_max: np.ndarray = np.nanmax(NoT, axis=(0, 1))
 NoJ_max: np.ndarray = np.nanmax(NoJ, axis=(0, 1))
+Now_max: np.ndarray = np.nanmax(Now, axis=(0, 1))
 
 CldT_max: np.ndarray = np.nanmax(CldT, axis=(0, 1))
 CldJ_max: np.ndarray = np.nanmax(CldJ, axis=(0, 1))
+Cldw_max: np.ndarray = np.nanmax(Cldw, axis=(0, 1))
 
 # Calculate mean and standard deviation
 NoT_max_mean: np.ndarray = NoT_max.mean(axis=-1)
@@ -95,6 +99,12 @@ NoJ_max_std : np.ndarray = NoJ_max.std(axis=-1)
 CldJ_max_mean: np.ndarray = CldJ_max.mean(axis=-1)
 CldJ_max_std : np.ndarray = CldJ_max.std(axis=-1)
 
+Now_max_mean: np.ndarray = Now_max.mean(axis=-1)
+Now_max_std : np.ndarray = Now_max.std(axis=-1)
+
+Cldw_max_mean: np.ndarray = Cldw_max.mean(axis=-1)
+Cldw_max_std : np.ndarray = Cldw_max.std(axis=-1)
+
 # ====================================================
 # Visualization
 # ====================================================
@@ -102,10 +112,10 @@ Time: np.ndarray = np.linspace(0, NoT_max_mean.size//2, NoT_max_mean.size)
 
 # Temperature
 fig, ax = plt.subplots(1, 1, figsize=(9, 4))
-ax.plot(Time, NoT_max_mean, label="No Rad.")
-ax.plot(Time, CldT_max_mean, label="Cld Rad.")
+ax.plot(Time, NoT_max_mean, label="No Rad.", linewidth=4)
+ax.plot(Time, CldT_max_mean, label="Cld Rad.", color="deeppink", linewidth=4)
 ax.fill_between(Time, NoT_max_mean-NoT_max_std, NoT_max_mean+NoT_max_std, alpha=0.3)
-ax.fill_between(Time, CldT_max_mean-CldT_max_std, CldT_max_mean+CldT_max_std, alpha=0.3)
+ax.fill_between(Time, CldT_max_mean-CldT_max_std, CldT_max_mean+CldT_max_std, alpha=0.3, color="deeppink")
 ax.fill_betweenx([0, 2000], 26, 28, color="red", alpha=0.2, zorder=0)
 ax.spines["right"].set_visible(False)
 ax.spines["top"].set_visible(False)
@@ -122,11 +132,11 @@ plt.close(fig)
 # Convective heating 
 fig, ax = plt.subplots(1, 1, figsize=(9, 4))
 
-ax.plot(Time, NoJ_max_mean, label="No Rad.")
-ax.plot(Time, CldJ_max_mean, label="Cld Rad.")
+ax.plot(Time, NoJ_max_mean, label="No Rad.", linewidth=4)
+ax.plot(Time, CldJ_max_mean, label="Cld Rad.", color="deeppink", linewidth=4)
 
 ax.fill_between(Time, NoJ_max_mean-NoJ_max_std, NoJ_max_mean+NoJ_max_std, alpha=0.3)
-ax.fill_between(Time, CldJ_max_mean-CldJ_max_std, CldJ_max_mean+CldJ_max_std, alpha=0.3)
+ax.fill_between(Time, CldJ_max_mean-CldJ_max_std, CldJ_max_mean+CldJ_max_std, alpha=0.3, color="deeppink")
 ax.fill_betweenx([0, 2000], 26, 28, color="red", alpha=0.2, zorder=0)
 ax.spines["right"].set_visible(False)
 ax.spines["top"].set_visible(False)
@@ -138,4 +148,22 @@ ax.set_title("Convective Heating anomaly [K/day]")
 ax.legend(frameon=False, loc="best")
 
 plt.savefig("/home/b11209013/Kuang2008_v0.3.0_Analysis/Figure/NoRad_vs_CldRad/J_evo.png", dpi=600, bbox_inches="tight")
+plt.close(fig)
+
+fig, ax = plt.subplots(1, 1, figsize=(9, 4))
+ax.plot(Time, Now_max_mean, label="No Rad.", linewidth=4)
+ax.plot(Time, Cldw_max_mean, label="Cld Rad.", color="deeppink", linewidth=4)
+ax.fill_between(Time, Now_max_mean-Now_max_std, Now_max_mean+Now_max_std, alpha=0.3)
+ax.fill_between(Time, Cldw_max_mean-Cldw_max_std, Cldw_max_mean+Cldw_max_std, alpha=0.3, color="deeppink")
+ax.fill_betweenx([0, 2000], 26, 28, color="red", alpha=0.2, zorder=0)
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.minorticks_on()
+ax.set_xlim(0, 30)
+ax.set_ylim(0, 0.2)
+ax.set_xlabel("Time [day]")
+ax.set_title("Vertical Motion [m/s]")
+# ax.legend(frameon=False, loc="best")
+
+plt.savefig("/home/b11209013/Kuang2008_v0.3.0_Analysis/Figure/NoRad_vs_CldRad/w_evo.png", dpi=600, bbox_inches="tight")
 plt.close(fig)

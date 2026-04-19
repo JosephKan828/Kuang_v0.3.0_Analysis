@@ -109,10 +109,10 @@ Time: np.ndarray = np.linspace(0, NoGen_max_mean.size//2, NoGen_max_mean.size)
 
 # Temperature
 fig, ax = plt.subplots(1, 1, figsize=(9, 4))
-ax.plot(Time, NoGen_max_mean, label="No Rad.")
-ax.plot(Time, CldGen_max_mean, label="Cld Rad.")
+ax.plot(Time, NoGen_max_mean, label="No Rad.", linewidth=4)
+ax.plot(Time, CldGen_max_mean, label="Cld Rad.", color="deeppink", linewidth=4)
 ax.fill_between(Time, NoGen_max_mean-NoGen_max_std, NoGen_max_mean+NoGen_max_std, alpha=0.3)
-ax.fill_between(Time, CldGen_max_mean-CldGen_max_std, CldGen_max_mean+CldGen_max_std, alpha=0.3)
+ax.fill_between(Time, CldGen_max_mean-CldGen_max_std, CldGen_max_mean+CldGen_max_std, alpha=0.3, color="deeppink")
 ax.fill_betweenx([0, 2000], 26, 28, color="red", alpha=0.2, zorder=0)
 ax.spines["right"].set_visible(False)
 ax.spines["top"].set_visible(False)
