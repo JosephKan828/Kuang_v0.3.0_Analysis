@@ -77,6 +77,9 @@ with h5py.File(WorkPath / "GalerkinState.h5", "r") as file:
 with h5py.File(WorkPath / "FourierState.h5", "r") as file:
     J1: np.ndarray = daily_mean(dt, cast(h5py.Dataset, file["J1"])[kidx, ...])
 
+# read ensemble file
+ens_list = np.loadtxt("Ens.txt", delimiter=",", dtype=int)
+
 # %%==================================================
 # Preprocessing
 # ====================================================
@@ -92,9 +95,9 @@ nz, nx, nt, nens = w.shape
 # Composite
 # ====================================================
 
-target_day: list[int] = [5, 6, 7]
+target_day: list[int] = [26, 27, 28]
 
-for ei in range(nens):
+for ei in ens_list:
     for day in target_day:
         print(f"Start processing Ens {ei} day {day}")
 
