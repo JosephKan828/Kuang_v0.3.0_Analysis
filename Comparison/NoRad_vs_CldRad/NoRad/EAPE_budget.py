@@ -9,6 +9,7 @@
 import os
 import h5py
 import numpy as np
+import pandas as pd
 import tomllib as tl
 
 from typing import cast
@@ -16,6 +17,8 @@ from pathlib import Path
 
 from matplotlib import pyplot as plt
 from matplotlib.colors import TwoSlopeNorm
+
+print("Finish importing packages")
 
 # %% =================================================
 # Functions
@@ -80,6 +83,8 @@ with h5py.File(WorkPath / "FourierState.h5", "r") as file:
 # Load eastward propagating ensembles
 ens_east = np.loadtxt("Ens.txt", delimiter=",", dtype=int)
 
+print("Finish loading data")
+
 # %% =================================================
 # Preprocessing
 # ====================================================
@@ -96,21 +101,29 @@ Gen: np.ndarray = daily_mean(dt, J * T)
 Dis: np.ndarray = daily_mean(dt, -w*T * (9.8/1004.5 - 0.0065))
 J  : np.ndarray = daily_mean(dt, J) 
 
+print("Finish calculating EAPE budget")
+
 # %% =================================================
 # Calculate composite
 # ====================================================
 
-target_days: list[int] = [5, 6, 7]
+target_days: list[int] = [26, 27, 28]
 
 for ei in ens_east:
+    # Select data for ensemble members
+    GenSelectEns: np.ndarray = Gen[..., ei]
+    DisSelectEns: np.ndarray = Dis[..., ei]
+    JSelectEns  : np.ndarray = J[..., ei]
+    J1SelectEns : np.ndarray = J1[..., ei]
+
     for day in target_days:
         print(f"Start processing Ens {ei} day {day}")
 
         # Select specific ensemble member and day
-        GenSelect : np.ndarray = Gen[..., day, :][..., ei]
-        DisSelect : np.ndarray = Dis[..., day, :][..., ei]
-        JSelect   : np.ndarray = J[..., day, :][..., ei]
-        J1Select  : np.ndarray = J1[..., day, :][..., ei]
+        GenSelect : np.ndarray = GenSelectEns[..., day]
+        DisSelect : np.ndarray = DisSelectEns[..., day]
+        JSelect   : np.ndarray = JSelectEns[..., day]
+        J1Select  : np.ndarray = J1SelectEns[..., day]
 
         # Roll J1 maximum to the center of x domain
         ## Calculate shift
@@ -181,3 +194,11 @@ for ei in ens_east:
 
         plt.savefig(figfolder, dpi=300, bbox_inches="tight")
         plt.close(fig)
+
+
+        # save data
+        os.makedirs(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/NoRad/Rolled/Ens{ei}", exist_ok=True)
+        Output = Path(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/NoRad/Rolled/Ens{ei}")
+
+        pd.DataFrame(GenRoll[:, pi_neg:pi_pos]).to_csv(Output / f"Gen_day{day+1}.csv")
+        pd.DataFrame(DisRoll[:, pi_neg:pi_pos]).to_csv(Output / f"Dis_day{day+1}.csv")

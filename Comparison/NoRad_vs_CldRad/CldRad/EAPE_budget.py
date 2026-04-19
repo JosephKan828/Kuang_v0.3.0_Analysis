@@ -9,6 +9,7 @@
 import os
 import h5py
 import numpy as np
+import pandas as pd
 import tomllib as tl
 
 from typing import cast
@@ -100,7 +101,7 @@ J  : np.ndarray = daily_mean(dt, J)
 # Calculate composite
 # ====================================================
 
-target_days: list[int] = [5, 6, 7]
+target_days: list[int] = [26, 27, 28]
 
 for ei in ens_east:
     for day in target_days:
@@ -181,3 +182,10 @@ for ei in ens_east:
 
         plt.savefig(figfolder, dpi=300, bbox_inches="tight")
         plt.close(fig)
+
+        # save data
+        os.makedirs(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/CldRad/Rolled/Ens{ei}", exist_ok=True)
+        Output = Path(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/CldRad/Rolled/Ens{ei}")
+
+        pd.DataFrame(GenRoll[:, pi_neg:pi_pos]).to_csv(Output / f"Gen_day{day+1}.csv")
+        pd.DataFrame(DisRoll[:, pi_neg:pi_pos]).to_csv(Output / f"Dis_day{day+1}.csv")
