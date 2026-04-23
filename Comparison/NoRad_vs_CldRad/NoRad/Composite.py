@@ -89,6 +89,8 @@ ens_list = np.loadtxt("Ens.txt", delimiter=",", dtype=int)
 w: np.ndarray = (GalerkinState["w1"] + GalerkinState["w2"]) / 86400.0
 T: np.ndarray = GalerkinState["T1"] + GalerkinState["T2"]
 J: np.ndarray = GalerkinState["J1"] + GalerkinState["J2"]
+wLW: np.ndarray = GalerkinState["wLW1"] + GalerkinState["wLW2"]
+wSW: np.ndarray = GalerkinState["wSW1"] + GalerkinState["wSW2"]
 
 nz, nx, nt, nens = w.shape
 
@@ -106,6 +108,8 @@ for ei in ens_list:
         wSelect : np.ndarray = w[..., day, :][..., ei]
         TSelect : np.ndarray = T[..., day, :][..., ei]
         JSelect : np.ndarray = J[..., day, :][..., ei]
+        wLWSelect: np.ndarray = wLW[..., day, :][..., ei]
+        wSWSelect: np.ndarray = wSW[..., day, :][..., ei]
         J1Select: np.ndarray = J1[..., day, :][..., ei]
 
         # Roll J1 maximum to the center of x domain
@@ -116,6 +120,8 @@ for ei in ens_list:
         wRoll: np.ndarray = np.roll(wSelect, shifts, axis=1)
         TRoll: np.ndarray = np.roll(TSelect, shifts, axis=1)
         JRoll: np.ndarray = np.roll(JSelect, shifts, axis=1)
+        wLWRoll: np.ndarray = np.roll(wLWSelect, shifts, axis=1)
+        wSWRoll: np.ndarray = np.roll(wSWSelect, shifts, axis=1)
 
         # Calculate index for period
         ## Half wavelength
@@ -133,6 +139,7 @@ for ei in ens_list:
         os.makedirs(FigPath / "Composite" / f"Ens{ei}", exist_ok=True)
 
         figfolder = FigPath / "Composite" / f"Ens{ei}" / f"day{day+1}.png"
+        figRad = FigPath / "Composite" / f"Ens{ei}" / f"Rad_day{day+1}.png"
 
         fig, axes = plt.subplots(2, 1, figsize=(11, 9), sharex=True)
         ax1, ax2 = axes.flatten()
@@ -177,6 +184,52 @@ for ei in ens_list:
         plt.savefig(figfolder, dpi=300, bbox_inches="tight")
         plt.close(fig)
 
+
+        fig, axes = plt.subplots(2, 1, figsize=(11, 9), sharex=True)
+        ax1, ax2 = axes.flatten()
+
+        J_ctf = ax1.contourf(
+            phase, z, JRoll[:, pi_neg:pi_pos],
+            cmap="BrBG", levels=np.linspace(-2, 2, 21)
+        )
+        w_ct = ax1.contour(
+            phase, z, wLWRoll[:, pi_neg:pi_pos],
+            colors="black", linewidths=3
+        )
+
+        ax1.set_xlim(-np.pi, np.pi)
+        ax1.set_ylim(0, 14000)
+        ax1.set_ylabel("Level [m]")
+        ax1.set_title("J (shading, K/day) vs. LW (contour, K/day)")
+        ax1.clabel(w_ct, inline=True)
+        fig.colorbar(J_ctf, ax=ax1)
+
+        J_ctf = ax2.contourf(
+            phase, z, JRoll[:, pi_neg:pi_pos],
+            cmap="BrBG", levels=np.linspace(-2, 2, 21)
+        )
+        T_ct = ax2.contour(
+            phase, z, wSWRoll[:, pi_neg:pi_pos],
+            colors="black", linewidths=3
+        )
+
+        ax2.set_xticks(
+            np.linspace(-np.pi, np.pi, 5),
+            [r"-$\pi$", r"-$\pi$/2", "0", r"$\pi$/2", r"$\pi$"]
+            )
+        ax2.set_xlim(-np.pi, np.pi)
+        ax2.set_ylim(0, 14000)
+        ax2.set_xlabel("Phase [rad]")
+        ax2.set_ylabel("Level [m]")
+        ax2.set_title("J (shading, K/day) vs. SW (contour, K/day)")
+        ax2.clabel(T_ct, inline=True)
+        fig.colorbar(J_ctf, ax=ax2)
+
+        plt.savefig(figRad, dpi=300, bbox_inches="tight")
+        plt.close(fig)
+
+
+
         # Save fil for phase analysis
         os.makedirs(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/NoRad/Rolled/Ens{ei}", exist_ok=True)
         Output = Path(f"/home/b11209013/Kuang2008_v0.3.0_Analysis/Files/NoRad/Rolled/Ens{ei}")
@@ -184,3 +237,5 @@ for ei in ens_list:
         pd.DataFrame(wRoll[:, pi_neg:pi_pos]).to_csv(Output / f"w_day{day+1}.csv")
         pd.DataFrame(TRoll[:, pi_neg:pi_pos]).to_csv(Output / f"T_day{day+1}.csv")
         pd.DataFrame(JRoll[:, pi_neg:pi_pos]).to_csv(Output / f"J_day{day+1}.csv")
+        pd.DataFrame(wLWRoll[:, pi_neg:pi_pos]).to_csv(Output / f"wLW_day{day+1}.csv")
+        pd.DataFrame(wSWRoll[:, pi_neg:pi_pos]).to_csv(Output / f"wSW_day{day+1}.csv")
