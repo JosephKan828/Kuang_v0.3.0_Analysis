@@ -35,9 +35,9 @@ plt.style.use(["seaborn-v0_8-colorblind", str(style_path)])
 # ====================================================
 
 # Path setting
-sim_name: str = "Rad(0.0,0.0,0.0)"
-exp_name: str = "NoRad"
-run_name: str = "2024-05-01_RUN01"
+sim_name: str = "Rad(0.0,0.0,0.1)"
+exp_name: str = "CldRad"
+run_name: str = "2026-05-12_RUN01"
 
 work_path: Path = Path(
     "/work/b11209013/Kuang2008_v0.3.0/full" +\
