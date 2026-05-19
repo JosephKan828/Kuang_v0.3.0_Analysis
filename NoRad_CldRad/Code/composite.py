@@ -6,6 +6,7 @@
 # Environment Setup
 # ====================================================
 
+import os
 import h5py
 import numpy as np
 
@@ -400,7 +401,24 @@ def main():
     plt.close()
 
 
+    print("NoRad temperature max.: ", No_chunked["T"].max())
+    print("CldRad temperature max.: ", Cld_chunked["T"].max())
 
+    # ------------------------------------------------
+    # Save file
+    # ------------------------------------------------
+    # setup path
+    file_path: Path = Path("/home/b11209013/Kuang2008_v0.3.0_Analysis/NoRad_CldRad/data/composite")
+
+    os.makedirs(file_path, exist_ok=True)
+
+    np.save(file_path / "NoRad/J.npy", No_rolled["J"][..., No_neg_pi:(No_pos_pi+1)])
+    np.save(file_path / "NoRad/T.npy", No_rolled["T"][..., No_neg_pi:(No_pos_pi+1)])
+    np.save(file_path / "NoRad/w.npy", No_rolled["w"][..., No_neg_pi:(No_pos_pi+1)])
+
+    np.save(file_path / "CldRad/J.npy", Cld_rolled["J"][..., Cld_neg_pi:(Cld_pos_pi+1)])
+    np.save(file_path / "CldRad/T.npy", Cld_rolled["T"][..., Cld_neg_pi:(Cld_pos_pi+1)])
+    np.save(file_path / "CldRad/w.npy", Cld_rolled["w"][..., Cld_neg_pi:(Cld_pos_pi+1)])
 
 # ====================================================
 # Execute main function
