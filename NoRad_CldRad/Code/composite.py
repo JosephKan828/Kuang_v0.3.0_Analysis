@@ -420,9 +420,18 @@ def main():
     np.save(file_path / "CldRad/T.npy", Cld_rolled["T"][..., Cld_neg_pi:(Cld_pos_pi+1)])
     np.save(file_path / "CldRad/w.npy", Cld_rolled["w"][..., Cld_neg_pi:(Cld_pos_pi+1)])
 
+    np.save(file_path / "NoRad/shifts.npy", No_shifts)
+    np.save(file_path / "NoRad/neg_pi.npy", No_neg_pi)
+    np.save(file_path / "NoRad/pos_pi.npy", No_pos_pi)
+
+    np.save(file_path / "CldRad/shifts.npy", Cld_shifts)
+    np.save(file_path / "CldRad/neg_pi.npy", Cld_neg_pi)
+    np.save(file_path / "CldRad/pos_pi.npy", Cld_pos_pi)
+
+
 # ====================================================
 # Execute main function
 # ====================================================
 
-if __name__ == "__main__":\
+if __name__ == "__main__":
     main()
