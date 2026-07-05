@@ -86,6 +86,7 @@ def main():
     print("CldRad max. generation: ", Cld_chunked["generation"].max())
     print("NoRad max. J: ", No_J_chunked.max())
     print("CldRad max. J: ", Cld_J_chunked.max())
+    print("Maximum generation ratio: ", Cld_chunked["generation"].max()/No_chunked["generation"].max())
 
     # ------------------------------------------------
     # Visualization
